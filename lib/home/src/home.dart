@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pomodoro_todo/home/src/tasks.dart';
 import 'package:pomodoro_todo/utils/utils.dart';
 
 class Home extends StatefulWidget {
@@ -11,7 +12,6 @@ class Home extends StatefulWidget {
 
 class _Home extends State<Home> {
   final circularCountDownTimer = CircularCountDownTimer(
-    seconds: 30,
     side: 200,
   );
 
@@ -22,29 +22,37 @@ class _Home extends State<Home> {
         title: Text(widget.title),
       ),
       body: Container(
-        padding: EdgeInsets.all(20),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Container(
-                decoration: BoxDecoration(color: Constants.primaryColor),
-                child: circularCountDownTimer),
-            MaterialButton(
-              onPressed: () => circularCountDownTimer.pauseTimer(),
-              child: Icon(Icons.pause),
-            ),
-            MaterialButton(
-              onPressed: () => circularCountDownTimer.startTimer(),
-              child: Icon(Icons.play_arrow),
-            ),
-            MaterialButton(
-              onPressed: () => circularCountDownTimer.resetTimer(),
-              child: Icon(Icons.reset_tv),
-            ),
+            _buildCountownTimerContainer(),
+            _buildTasksContainer(),
           ],
         ),
       ),
       // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  Widget _buildCountownTimerContainer() {
+    return Container(
+        padding: EdgeInsets.all(10),
+        height: MediaQuery.of(context).size.height,
+        width: 300,
+        decoration: BoxDecoration(color: Constants.primaryColor),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [circularCountDownTimer]));
+  }
+
+  Widget _buildTasksContainer() {
+    return Expanded(
+        child: Container(
+            height: MediaQuery.of(context).size.height,
+            decoration: BoxDecoration(color: Constants.secondaryColor),
+            child: Tasks(
+              circularCountDownTimer: circularCountDownTimer,
+            )));
   }
 }

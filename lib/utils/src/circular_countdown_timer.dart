@@ -3,11 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 class CircularCountDownTimer extends StatefulWidget {
-  final int seconds;
   final double side;
   final _CircularCountDownTimer _child = _CircularCountDownTimer();
 
-  CircularCountDownTimer({this.seconds, this.side});
+  CircularCountDownTimer({this.side});
   void startTimer() {
     _child.startTimer();
   }
@@ -20,23 +19,29 @@ class CircularCountDownTimer extends StatefulWidget {
     _child.pauseTimer();
   }
 
+  void setColor(Color color) {
+    _child.setColor(color);
+  }
+
+  void setDuration(int minutes) {
+    _child.setDuration(minutes);
+  }
+
   @override
   _CircularCountDownTimer createState() => _child;
 }
 
 class _CircularCountDownTimer extends State<CircularCountDownTimer> {
   Timer _timer;
-  int _start;
+  int _maxTime = 0;
+  int _currentTime = 0;
+  Color _progressColor = Colors.redAccent;
 
-  @override
-  void initState() {
-    _start = widget.seconds;
-    super.initState();
-  }
-
-  @override
-  void didUpdateWidget(covariant CircularCountDownTimer oldWidget) {
-    super.didUpdateWidget(oldWidget);
+  void setDuration(int minutes) {
+    setState(() {
+      _maxTime = minutes * 60;
+      _currentTime = _maxTime;
+    });
   }
 
   void pauseTimer() {
@@ -50,7 +55,13 @@ class _CircularCountDownTimer extends State<CircularCountDownTimer> {
       _timer.cancel();
     }
     setState(() {
-      _start = widget.seconds;
+      _currentTime = _maxTime;
+    });
+  }
+
+  void setColor(Color color) {
+    setState(() {
+      _progressColor = color;
     });
   }
 
@@ -61,10 +72,10 @@ class _CircularCountDownTimer extends State<CircularCountDownTimer> {
       oneSec,
       (Timer timer) => setState(
         () {
-          if (_start < 1) {
+          if (_currentTime < 1) {
             timer.cancel();
           } else {
-            _start = _start - 1;
+            _currentTime = _currentTime - 1;
           }
         },
       ),
@@ -95,13 +106,17 @@ class _CircularCountDownTimer extends State<CircularCountDownTimer> {
                         child: new CircularProgressIndicator(
                           value: remainingTime(),
                           backgroundColor: Colors.grey,
+                          valueColor:
+                              new AlwaysStoppedAnimation<Color>(_progressColor),
                           strokeWidth: 10,
                         ),
                       ),
                     ),
                     Center(
                         child: Text(
-                      Duration(seconds: _start).toString().substring(2, 7),
+                      Duration(seconds: _currentTime)
+                          .toString()
+                          .substring(2, 7),
                       style: TextStyle(
                           fontSize: (widget.side * 0.2), color: Colors.white),
                     )),
@@ -116,8 +131,9 @@ class _CircularCountDownTimer extends State<CircularCountDownTimer> {
   }
 
   double remainingTime() {
-    double maxTime = widget.seconds.toDouble();
-    double currentTime = _start.toDouble();
+    if (_maxTime == 0) return 0;
+    double maxTime = _maxTime.toDouble();
+    double currentTime = _currentTime.toDouble();
     return currentTime / maxTime;
   }
 }
