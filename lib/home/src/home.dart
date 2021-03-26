@@ -28,11 +28,8 @@ class _Home extends State<Home> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            CountDownTimer(
-              retry: 1,
-            ),
-            Text(
-              'You have pushed the button this many times:',
+            CircularCountDownTimer(
+              seconds: 30 * 60,
             ),
             Text(
               '$_counter',

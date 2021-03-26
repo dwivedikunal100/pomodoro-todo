@@ -1,1 +1,1 @@
-export 'src/countdown_timer.dart';
+export 'src/circular_countdown_timer.dart';
