@@ -3,12 +3,25 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 class CircularCountDownTimer extends StatefulWidget {
-  final seconds;
+  final int seconds;
+  final double side;
+  final _CircularCountDownTimer _child = _CircularCountDownTimer();
 
-  CircularCountDownTimer({this.seconds});
+  CircularCountDownTimer({this.seconds, this.side});
+  void startTimer() {
+    _child.startTimer();
+  }
+
+  void resetTimer() {
+    _child.resetTimer();
+  }
+
+  void pauseTimer() {
+    _child.pauseTimer();
+  }
 
   @override
-  _CircularCountDownTimer createState() => _CircularCountDownTimer();
+  _CircularCountDownTimer createState() => _child;
 }
 
 class _CircularCountDownTimer extends State<CircularCountDownTimer> {
@@ -19,18 +32,30 @@ class _CircularCountDownTimer extends State<CircularCountDownTimer> {
   void initState() {
     _start = widget.seconds;
     super.initState();
-    startTimer();
   }
 
   @override
   void didUpdateWidget(covariant CircularCountDownTimer oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _timer.cancel();
-    _start = widget.seconds;
-    startTimer();
+  }
+
+  void pauseTimer() {
+    if (_timer != null) {
+      _timer.cancel();
+    }
+  }
+
+  void resetTimer() {
+    if (_timer != null) {
+      _timer.cancel();
+    }
+    setState(() {
+      _start = widget.seconds;
+    });
   }
 
   void startTimer() {
+    if (_timer != null && _timer.isActive) return;
     const oneSec = const Duration(seconds: 1);
     _timer = new Timer.periodic(
       oneSec,
@@ -48,7 +73,7 @@ class _CircularCountDownTimer extends State<CircularCountDownTimer> {
 
   @override
   void dispose() {
-    _timer.cancel();
+    resetTimer();
     super.dispose();
   }
 
@@ -59,13 +84,14 @@ class _CircularCountDownTimer extends State<CircularCountDownTimer> {
           Column(
             children: <Widget>[
               SizedBox(
-                height: 200.0,
+                height: widget.side,
+                width: widget.side,
                 child: Stack(
                   children: [
                     Center(
                       child: Container(
-                        width: 200,
-                        height: 200,
+                        width: widget.side,
+                        height: widget.side,
                         child: new CircularProgressIndicator(
                           value: remainingTime(),
                           backgroundColor: Colors.grey,
@@ -76,7 +102,8 @@ class _CircularCountDownTimer extends State<CircularCountDownTimer> {
                     Center(
                         child: Text(
                       Duration(seconds: _start).toString().substring(2, 7),
-                      style: TextStyle(fontSize: 30),
+                      style: TextStyle(
+                          fontSize: (widget.side * 0.2), color: Colors.white),
                     )),
                   ],
                 ),

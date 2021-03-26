@@ -10,13 +10,10 @@ class Home extends StatefulWidget {
 }
 
 class _Home extends State<Home> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  final circularCountDownTimer = CircularCountDownTimer(
+    seconds: 30,
+    side: 200,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -24,25 +21,30 @@ class _Home extends State<Home> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
+      body: Container(
+        padding: EdgeInsets.all(20),
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            CircularCountDownTimer(
-              seconds: 30 * 60,
+            Container(
+                decoration: BoxDecoration(color: Constants.primaryColor),
+                child: circularCountDownTimer),
+            MaterialButton(
+              onPressed: () => circularCountDownTimer.pauseTimer(),
+              child: Icon(Icons.pause),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+            MaterialButton(
+              onPressed: () => circularCountDownTimer.startTimer(),
+              child: Icon(Icons.play_arrow),
+            ),
+            MaterialButton(
+              onPressed: () => circularCountDownTimer.resetTimer(),
+              child: Icon(Icons.reset_tv),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
