@@ -1,20 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:pomodoro_todo/utils/utils.dart';
+import 'package:pomodoro_todo/models/models.dart';
+import 'package:pomodoro_todo/storage/src/core_storage.dart';
 
 class Tasks extends StatefulWidget {
   final circularCountDownTimer;
+  final Function isActive;
 
-  Tasks({this.circularCountDownTimer});
+  Tasks({this.circularCountDownTimer, this.isActive});
 
   @override
   State<StatefulWidget> createState() => _Tasks();
 }
 
 class _Tasks extends State<Tasks> {
+  bool x;
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-        child: Container(
+    return FutureBuilder(
+        future: CoreStorage.getTasks(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.hasData) {
+            return Expanded(
+                child: SingleChildScrollView(
+                    child: Column(
+              children: List<Widget>.from(
+                  snapshot.data.map((e) => _buildTaskCard(e)).toList()),
+            )));
+          } else if (snapshot.hasError) {
+            return Container(
+                height: MediaQuery.of(context).size.height * 0.80,
+                child: Center(child: Text("Error")));
+          } else {
+            return CircularProgressIndicator();
+          }
+        });
+  }
+
+  Widget _buildTaskCard(Task task) {
+    return Container(
       height: 70,
       child: Card(
         child: Container(
@@ -23,59 +46,68 @@ class _Tasks extends State<Tasks> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                      child: TextFormField(
-                    style: TextStyle(fontSize: 20),
+                      child: Text(
+                    task.title,
+                    style: TextStyle(fontSize: 17),
                   )),
-                  _buildTimeSelector(),
+                  Container(
+                    padding: EdgeInsets.all(3),
+                    child: Text(
+                      "${task.durationInMinutes.toString()} Mins",
+                      style:
+                          TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                    ),
+                  ),
                   Row(children: [
-                    IconButton(
+                    MaterialButton(
+                      height: 60,
+                      color: Colors.green,
                       onPressed: () {
+                        setState(() {
+                          widget.isActive();
+                        });
                         widget.circularCountDownTimer
-                            .setDuration(dropdownValue);
+                            .setDuration(task.durationInMinutes);
                         widget.circularCountDownTimer.startTimer();
                       },
-                      icon: Icon(
-                        Icons.play_arrow,
-                        color: Colors.green,
+                      child: Text(
+                        "Start",
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
-                    IconButton(
-                      onPressed: () =>
-                          widget.circularCountDownTimer.pauseTimer(),
-                      icon: Icon(Icons.pause, color: Colors.orange),
-                    ),
-                    IconButton(
-                      onPressed: () =>
-                          widget.circularCountDownTimer.resetTimer(),
-                      icon: Icon(
-                        Icons.stop,
-                        color: Colors.red,
-                      ),
-                    ),
+                    Padding(padding: EdgeInsets.all(3)),
+                    task.isCompleted == false
+                        ? MaterialButton(
+                            height: 60,
+                            color: Colors.blueAccent,
+                            onPressed: () {
+                              setState(() {
+                                x = false;
+                              });
+                              CoreStorage.completeTask(task);
+                            },
+                            child: Text(
+                              "Complete",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          )
+                        : MaterialButton(
+                            height: 60,
+                            color: Colors.red,
+                            onPressed: () {
+                              setState(() {
+                                x = false;
+                              });
+                              CoreStorage.deleteTask(task.id);
+                            },
+                            child: Text(
+                              "Detele",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
                   ])
                 ])),
       ),
-    ));
-  }
-
-  int dropdownValue = 5;
-  Widget _buildTimeSelector() {
-    return DropdownButton<int>(
-      value: dropdownValue,
-      icon: Icon(Icons.access_time),
-      elevation: 0,
-      onChanged: (int newValue) {
-        setState(() {
-          dropdownValue = newValue;
-        });
-      },
-      items: <int>[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
-          .map<DropdownMenuItem<int>>((int value) {
-        return DropdownMenuItem<int>(
-          value: value,
-          child: Text(value.toString()),
-        );
-      }).toList(),
     );
   }
 }

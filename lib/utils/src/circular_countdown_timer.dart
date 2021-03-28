@@ -11,6 +11,10 @@ class CircularCountDownTimer extends StatefulWidget {
     _child.startTimer();
   }
 
+  bool isActive() {
+    return _child.isActive();
+  }
+
   void resetTimer() {
     _child.resetTimer();
   }
@@ -44,6 +48,13 @@ class _CircularCountDownTimer extends State<CircularCountDownTimer> {
     });
   }
 
+  bool isActive() {
+    if (_timer == null) {
+      return false;
+    }
+    return _timer.isActive;
+  }
+
   void pauseTimer() {
     if (_timer != null) {
       _timer.cancel();
@@ -55,7 +66,7 @@ class _CircularCountDownTimer extends State<CircularCountDownTimer> {
       _timer.cancel();
     }
     setState(() {
-      _currentTime = _maxTime;
+      _currentTime = 0;
     });
   }
 
