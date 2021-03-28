@@ -7,7 +7,7 @@ import 'package:window_size/window_size.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-    setWindowMinSize(Size(375, 500));
+    setWindowMinSize(Size(700, 500));
   }
   runApp(PomodoroTodo());
 }
