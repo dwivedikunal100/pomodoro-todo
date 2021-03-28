@@ -6,7 +6,7 @@ class CoreStorage {
   static LocalStorage storage = new LocalStorage('POMODORO');
 
   /// API to create Task in Local Storage
-  static void createTask(String title, int durationInMinutes) async {
+  static Future<void> createTask(String title, int durationInMinutes) async {
     String x = getNext().toString();
     Task task = Task(
         id: x,

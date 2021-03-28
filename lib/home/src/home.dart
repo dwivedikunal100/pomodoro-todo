@@ -19,6 +19,7 @@ class _Home extends State<Home> {
   String task;
   bool timerActive = false;
   final fieldText = TextEditingController();
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -140,28 +141,40 @@ class _Home extends State<Home> {
                 },
               )),
               _buildTimeSelector(),
-              Container(
-                  decoration: const ShapeDecoration(
-                    color: Colors.lightBlue,
-                    shape: CircleBorder(),
-                  ),
-                  child: IconButton(
-                      icon: Icon(
-                        Icons.add,
-                        color: Colors.white,
+              _isLoading == false
+                  ? Container(
+                      decoration: const ShapeDecoration(
+                        color: Colors.lightBlue,
+                        shape: CircleBorder(),
                       ),
-                      onPressed: () {
-                        CoreStorage.createTask(
-                          task == null ? "Demo Task" : task,
-                          dropdownValue == null ? 5 : dropdownValue,
-                        );
-                        clearDetails();
-                      }))
+                      child: IconButton(
+                          icon: Icon(
+                            Icons.add,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            _addTaskAction();
+                          }))
+                  : CircularProgressIndicator()
             ],
           ),
         ),
       ),
     );
+  }
+
+  _addTaskAction() async {
+    setState(() {
+      _isLoading = false;
+    });
+    await CoreStorage.createTask(
+      task == null ? "Demo Task" : task,
+      dropdownValue == null ? 5 : dropdownValue,
+    );
+    setState(() {
+      _isLoading = true;
+    });
+    clearDetails();
   }
 
   Widget _buildTimeSelector() {
