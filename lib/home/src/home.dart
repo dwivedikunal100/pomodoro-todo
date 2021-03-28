@@ -27,7 +27,7 @@ class _Home extends State<Home> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             _buildCountownTimerContainer(),
-            _buildTasksContainer(),
+            Expanded(child: _buildTasksContainer()),
           ],
         ),
       ),
@@ -47,12 +47,43 @@ class _Home extends State<Home> {
   }
 
   Widget _buildTasksContainer() {
-    return Expanded(
+    return Container(
+        height: MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(color: Constants.secondaryColor),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Container(padding: EdgeInsets.all(5), child: Text("Add a Task")),
+          _buildAddTask(),
+          Tasks(
+            circularCountDownTimer: circularCountDownTimer,
+          )
+        ]));
+  }
+
+  Widget _buildAddTask() {
+    return Container(
+      height: 70,
+      margin: EdgeInsets.only(bottom: 30),
+      child: Card(
         child: Container(
-            height: MediaQuery.of(context).size.height,
-            decoration: BoxDecoration(color: Constants.secondaryColor),
-            child: Tasks(
-              circularCountDownTimer: circularCountDownTimer,
-            )));
+          padding: EdgeInsets.all(10),
+          child: Row(
+            children: [
+              Flexible(child: TextFormField()),
+              Container(
+                  decoration: const ShapeDecoration(
+                    color: Colors.lightBlue,
+                    shape: CircleBorder(),
+                  ),
+                  child: IconButton(
+                      icon: Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {}))
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -15,6 +15,7 @@ dependencies:
       url: git://github.com/google/flutter-desktop-embedding.git
       path: plugins/window_size
   cupertino_icons: ^1.0.2
+  localstorage: ^4.0.0+1
 
 dev_dependencies:
   flutter_test:
